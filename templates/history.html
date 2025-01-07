@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Measurements</title>
+    <link rel="stylesheet" href="/static/css/history.css">
+</head>
+<body>
+    <header>
+        <h1>Latest Measurements</h1>
+        <p>Temperature and Humidity Data from Raspberry Pi</p>
+    </header>
+    <div class="container">
+        <h2>Data Overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Temperature (&deg;C)</th>
+                    <th>Humidity (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for measurement in measurements %}
+                    <tr>
+                        <td>{{ measurement[0] }}</td>
+                        <td>{{ measurement[1] }}</td>
+                        <td>{{ measurement[2] }}</td>
+                        <td>{{ measurement[3] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

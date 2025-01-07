@@ -1,0 +1,4 @@
+phototrap/
+*.log
+*.tmp
+.DS_Store

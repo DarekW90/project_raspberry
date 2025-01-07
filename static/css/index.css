@@ -1,0 +1,113 @@
+/* Styl popupu */
+#popup {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fc002a;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+    color: #333;
+}
+header {
+    background: #4CAF50;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    border-bottom: 3px solid #388E3C;
+}
+
+header.alert {
+    background-color: #fc002a; /* Tylko zmiana koloru t?a */
+}
+
+.welcome-msg {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #4CAF50;
+}
+
+h1.alert, h2.alert {
+    color: #fc002a; /* Tylko zmiana koloru tekstu */
+}
+
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.feature {
+    flex: 1 1 calc(33.333% - 20px);
+    margin: 10px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.feature h3 {
+    margin-bottom: 10px;
+}
+
+/* Kontener z przyciskami */
+.buttons-container {
+    display: flex; /* Ustawia elementy w poziomym szeregu */
+    gap: 20px; /* Odst?p mi?dzy elementami */
+    justify-content: center; /* Wyr�wnuje elementy na ?rodku */
+    align-items: center; /* Wyr�wnanie pionowe */
+    margin: 20px 0; /* Dystans od g�ry i do?u */
+}
+
+.cta {
+    text-align: center;
+    margin-top: 30px;
+}
+.cta a {
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.cta a:hover {
+    background: #45a049;
+}
+.cta a.alert {
+    background: #fc002a; /* Tylko zmiana koloru t?a przycisku */
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background: #333;
+    color: white;
+    margin-top: 30px;
+}
