@@ -35,7 +35,9 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             temperature REAL,
-            humidity REAL
+            humidity REAL,
+            ph REAL,
+            adjustment TEXT
         )
     """)
     conn.commit()
@@ -231,6 +233,15 @@ def door_bell_page():
 def video_feed():
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/aquarium')
+def ph_measurements_page():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, timestamp, temperature, ph, adjustment FROM measurements ORDER BY timestamp DESC LIMIT 20")
+    measurements = cursor.fetchall()
+    conn.close()
+    return render_template('aquarium.html', measurements=measurements)
+
 
 ### FUNKCJE SYMULUJACE ###
 
@@ -256,15 +267,100 @@ def simulate_sensor():
         time.sleep(10)
 
 
+# Funkcja symulujaca kontrole pH wody
+def simulate_ph_control():
+    target_ph = 7.0  # Docelowe pH wody (neutralne)
+    adjustment_rate = 0.1  # Szybkosc zmiany pH w wyniku regulacji
+
+    while True:
+        # Generowanie losowych wartosci pomiarowych
+        current_ph = round(random.uniform(6.0, 8.0), 2)  # pH w zakresie 6-8
+        temperature = round(random.uniform(25.0, 30.0), 1)  # Temperatury w zakresie 20-30C
+        # humidity = round(random.uniform(40.0, 60.0), 1)  # Wilgotnosc w zakresie 40-60%
+        
+        # Symulacja regulacji pH
+        if current_ph < target_ph:
+            current_ph = round(current_ph + adjustment_rate, 2)  # Dodaj zasade
+            adjustment_action = "Dodano zasade"
+        elif current_ph > target_ph:
+            current_ph = round(current_ph - adjustment_rate, 2)  # Dodaj kwas
+            adjustment_action = "Dodano kwas"
+        else:
+            adjustment_action = "Brak dzialania"
+
+        print(f"Symulacja Akwarium: Temp={temperature}C, pH={current_ph} ({adjustment_action})")
+
+        # Zapis danych do bazy
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO measurements (temperature, ph, adjustment) VALUES (?, ?, ?)",
+            (temperature, current_ph, adjustment_action)
+        )
+        conn.commit()
+        conn.close()
+
+        # Odczyt co 10 sekund
+        time.sleep(10)
+
+
+# Funkcja symulujaca jakosc powietrza
+def simulate_air_quality():
+    while True:
+        # Generowanie losowych wartosci pomiarowych
+        pm25 = round(random.uniform(0.0, 100.0), 1)  # Poziom PM2.5 (0-100 �g/m�)
+        pm10 = round(random.uniform(0.0, 150.0), 1)  # Poziom PM10 (0-150 �g/m�)
+        temperature = round(random.uniform(15.0, 35.0), 1)  # Temperatura (15-35�C)
+        humidity = round(random.uniform(30.0, 70.0), 1)  # Wilgotno?? (30-70%)
+
+        # Ocena jako?ci powietrza na podstawie PM2.5
+        if pm25 < 50:
+            air_quality = "Dobra"
+        elif pm25 < 100:
+            air_quality = "Umiarkowana"
+        else:
+            air_quality = "Zla"
+
+        print(f"Symulacja Jakosci Powietrza: PM2.5={pm25} ug/m3, PM10={pm10} ug/m3, Temp={temperature}C, Wilgotnosc={humidity}%, Jakosc={air_quality}")
+
+        # Zapis danych do bazy
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO measurements (pm25, pm10, temperature, humidity, air_quality) VALUES (?, ?, ?, ?, ?)",
+            (pm25, pm10, temperature, humidity, air_quality)
+        )
+        conn.commit()
+        conn.close()
+
+        # Odczyt co 10 sekund
+        time.sleep(10)
+
+
 
 # Uruchomienie serwera Flask i symulacji sensora
 if __name__ == '__main__':
     init_db()
 
+    ### WĄTKI SYMULUJĄCE ###
+
+    # Wątek do symulacji sensora pH
+    sensor_thread = threading.Thread(target=simulate_ph_control)
+    sensor_thread.daemon = True
+    sensor_thread.start()
+
     # Wątek do symulacji sensora
     sensor_thread = threading.Thread(target=simulate_sensor)
     sensor_thread.daemon = True
     sensor_thread.start()
+
+    # Wątek do symulacji sensora jakości powietrza
+    sensor_thread = threading.Thread(target=simulate_air_quality)
+    sensor_thread.daemon = True
+    sensor_thread.start()
+
+
+    ### KONIEC WĄTKÓW SYMULUJĄCYCH ###
 
     # W?tek obs?uguj?cy kamer?
     camera_thread = threading.Thread(target=capture_camera)

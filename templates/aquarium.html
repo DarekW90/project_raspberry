@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pH Measurements</title>
+    <link rel="stylesheet" href="static/css/measurements.css">
+</head>
+<body>
+    <header>
+        <h1>Water pH Control Data</h1>
+        <p>Monitoring pH Levels, Temperature, and Adjustment Actions</p>
+    </header>
+    <div class="container">
+        <h2>Latest pH Measurements</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Timestamp</th>
+                    <th>Temperature (&deg;C)</th>
+                    <th>pH</th>
+                    <th>Adjustment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for measurement in measurements %}
+                    <tr>
+                        <td>{{ measurement[0] }}</td>
+                        <td>{{ measurement[1] }}</td>
+                        <td>{{ measurement[2] }}</td>
+                        <td>{{ measurement[3] }}</td>
+                        <td>{{ measurement[4] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        <div class="cta">
+            <a href="/" class="button">Return to Home</a>
+            <a href="/ph_measurements_page" class="button">Go to Latest pH Measurements</a>
+            <a href="/ph_history_page" class="button">Go to pH History</a>
+        </div>
+        <p>&copy; 2025 Raspberry Pi Sensor App | All Rights Reserved</p>
+    </footer>
+</body>
+</html>
