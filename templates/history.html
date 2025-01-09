@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Measurements</title>
-    <link rel="stylesheet" href="/static/css/history.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <header>
-        <h1 class="welcome-msg">Latest Measurements</h1>
+        <p class="welcome-msg">Latest Measurements</p>
         <p>Temperature and Humidity Data from Raspberry Pi</p>
     </header>
     <div class="container">
@@ -34,5 +35,7 @@
             </tbody>
         </table>
     </div>
+    <div id="popup">Ruch wykryty! Sprawdz kamere!</div>
+    <script src="static/js/index.js"></script>
 </body>
 </html>

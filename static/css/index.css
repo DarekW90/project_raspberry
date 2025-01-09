@@ -1,4 +1,90 @@
-/* Styl popupu */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+    color: #333;
+}
+header {
+    background: #4CAF50;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+h1, h2 {
+    color: #4CAF50;
+    text-align: center;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+table, th, td {
+    border: 1px solid #ddd;
+}
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background: #4CAF50;
+    color: white;
+}
+.cta {
+    text-align: center;
+    margin-top: 30px;
+}
+.cta a {
+    background: #4CAF50;
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 18px;
+}
+.cta a:hover {
+    background: #45a049;
+}
+.welcome-msg {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+footer {
+    text-align: center;
+    padding: 20px 0;
+    background: #333;
+    color: white;
+    margin-top: 30px;
+}
+/* CAMERA SECTION */
+
+.camera-feed {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.camera-feed img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+
+/* POPUP SECTION */
 #popup {
     display: none;
     position: fixed;
@@ -12,48 +98,28 @@
     z-index: 1000;
 }
 
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f5f5f5;
-    color: #333;
-}
-header {
-    background: #4CAF50;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    border-bottom: 3px solid #388E3C;
-}
-
+/* ALLERT SECTION */
 header.alert {
     background-color: #fc002a; /* Tylko zmiana koloru t?a */
 }
-
-.welcome-msg {
-    color: white;
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2 {
-    color: #4CAF50;
-}
-
 h1.alert, h2.alert {
     color: #fc002a; /* Tylko zmiana koloru tekstu */
 }
+.cta a.alert {
+    background: #fc002a; /* Tylko zmiana koloru t?a przycisku */
+}
+/* IMAGES SECTION */
+.image-container {
+    text-align: center; /* Center the image inside the container */
+}
+    
+.resized-image {
+    width: 100%; /* Adjust to 100% of the container width */
+    max-width: 500px; /* Set a maximum width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* FEATURE SECTION */
 
 .features {
     display: flex;
@@ -83,32 +149,4 @@ h1.alert, h2.alert {
     justify-content: center; /* Wyr�wnuje elementy na ?rodku */
     align-items: center; /* Wyr�wnanie pionowe */
     margin: 20px 0; /* Dystans od g�ry i do?u */
-}
-
-.cta {
-    text-align: center;
-    margin-top: 30px;
-}
-.cta a {
-    background: #4CAF50;
-    color: white;
-    text-decoration: none;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 18px;
-}
-
-.cta a:hover {
-    background: #45a049;
-}
-.cta a.alert {
-    background: #fc002a; /* Tylko zmiana koloru t?a przycisku */
-}
-
-footer {
-    text-align: center;
-    padding: 20px 0;
-    background: #333;
-    color: white;
-    margin-top: 30px;
 }

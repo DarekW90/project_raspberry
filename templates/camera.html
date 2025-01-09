@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camera Stream</title>
-    <link rel="stylesheet" href="static/css/camera.css">
+    <link rel="stylesheet" href="static/css/index.css">
 </head>
 <body>
     <header>
-        <h1>Live Camera Stream</h1>
+        <p class="welcome-msg">Live Camera Stream</p>
     </header>
     <div class="camera-feed">
         <img src="/video_feed" alt="Camera Stream">
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     </div>
     <footer>
         <div class="cta">
@@ -19,5 +20,7 @@
         </div>
         <p>� 2025 Raspberry Pi Sensor App | All Rights Reserved</p>
     </footer>
+    <div id="popup">Ruch wykryty! Sprawdz kamere!</div>
+    <script src="static/js/index.js"></script>
 </body>
 </html>

@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pH Measurements</title>
-    <link rel="stylesheet" href="static/css/measurements.css">
+    <link rel="stylesheet" href="static/css/index.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
     <header>
-        <h1 class="welcome-msg">Water pH Control Data</h1>
+        <p class="welcome-msg">Water pH Control Data</p>
         <p>Monitoring pH Levels, Temperature, and Adjustment Actions</p>
     </header>
     <div class="container">
@@ -48,5 +49,7 @@
         </div>
         <p>&copy; 2025 Raspberry Pi Sensor App | All Rights Reserved</p>
     </footer>
+    <div id="popup">Ruch wykryty! Sprawdz kamere!</div>
+    <script src="static/js/index.js"></script>
 </body>
 </html>
