@@ -11,6 +11,11 @@ header {
     padding: 20px 0;
     text-align: center;
 }
+.welcome-msg {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
 .container {
     max-width: 800px;
     margin: 20px auto;
