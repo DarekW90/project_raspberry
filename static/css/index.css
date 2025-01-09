@@ -31,6 +31,16 @@ th {
     background: #4CAF50;
     color: white;
 }
+/* Kontener z przyciskami */
+.buttons-container {
+    display: flex; /* Ustawia elementy w poziomym szeregu */
+    gap: 20px; /* Odst?p mi?dzy elementami */
+    justify-content: center; /* Wyr�wnuje elementy na ?rodku */
+    align-items: center; /* Wyr�wnanie pionowe */
+    flex-wrap: wrap; /* Zawijanie element�w */
+    margin: 20px 0; /* Dystans od g�ry i do?u */
+    border: #333 1px solid; /* Grubo?? i kolor obramowania */
+}
 .cta {
     text-align: center;
     margin-top: 30px;
@@ -142,11 +152,3 @@ h1.alert, h2.alert {
     margin-bottom: 10px;
 }
 
-/* Kontener z przyciskami */
-.buttons-container {
-    display: flex; /* Ustawia elementy w poziomym szeregu */
-    gap: 20px; /* Odst?p mi?dzy elementami */
-    justify-content: center; /* Wyr�wnuje elementy na ?rodku */
-    align-items: center; /* Wyr�wnanie pionowe */
-    margin: 20px 0; /* Dystans od g�ry i do?u */
-}

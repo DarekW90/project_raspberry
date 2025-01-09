@@ -73,23 +73,27 @@ def init_db():
 def capture_camera():
     """Obsluguje kamere, odczytujac klatki i zapisujac je do globalnej zmiennej."""
     global last_frame
-    camera = cv2.VideoCapture(0)
-    
-    if not camera.isOpened():
-        raise RuntimeError("Nie mozna uzyskac dostepu do kamery.")
+    try:
+        camera = cv2.VideoCapture(0)
+        
+        if not camera.isOpened():
+            raise RuntimeError("Nie mozna uzyskac dostepu do kamery.")
 
-    while True:
-        success, frame = camera.read()
-        if not success:
-            break
+        while True:
+            success, frame = camera.read()
+            if not success:
+                break
 
-        with camera_lock:
-            last_frame = frame.copy()  # Aktualizuj globaln? klatk?
+            with camera_lock:
+                last_frame = frame.copy()  # Aktualizuj globaln? klatk?
 
-        # Dodaj opoznienie, aby uniknac przeciazenia CPU
-        time.sleep(0.05)
-    
-    camera.release()
+            # Dodaj opoznienie, aby uniknac przeciazenia CPU
+            time.sleep(0.05)
+    except RuntimeError:
+        print("\n\n\033[91m" + 20 * "-" + " Nie wykryto kamery " + 20 * "-" + "\033[0m\n\n")
+    finally:
+        if "camera" in locals() and camera.isOpened():
+            camera.release()
 
 
 def generate_frames():
