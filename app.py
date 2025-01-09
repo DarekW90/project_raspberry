@@ -24,50 +24,58 @@ last_frame = None
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "measurements.db")
 
-def init_db():
+def init_db(DB_PATH):
     """Inicjalizacja bazy danych."""
+
+    print(f"DB_PATH: {os.path.abspath(DB_PATH)}")
+
     if not os.path.exists(DB_PATH):
-        print(f"Tworzenie bazy danych w lokalizacji: {DB_PATH}")
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+        print("Baza danych nie istnieje. Tworze nowa...")
 
-    # Tworzenie tabeli dla weather control
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS weather_control (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            temperature REAL,
-            humidity REAL
-        )
-    """)
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
 
-    # Tworzenie tabeli dla air control
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS air_control (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            pm25 REAL,
-            pm10 REAL,
-            temperature REAL,
-            humidity REAL,
-            air_quality TEXT
-        )
-    """)
+        # Tworzenie tabeli dla weather control
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS weather_control (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                temperature REAL,
+                humidity REAL
+            )
+        """)
 
-    # Tworzenie tabeli dla water control
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS water_control (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            ph REAL,
-            adjustment TEXT,
-            current_ph REAL,
-            temperature REAL
-        )
-    """)
+        # Tworzenie tabeli dla air control
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS air_control (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                pm25 REAL,
+                pm10 REAL,
+                temperature REAL,
+                humidity REAL,
+                air_quality TEXT
+            )
+        """)
 
-    conn.commit()
-    conn.close()
+        # Tworzenie tabeli dla water control
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS water_control (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                ph REAL,
+                adjustment TEXT,
+                current_ph REAL,
+                temperature REAL
+            )
+        """)
+
+        conn.commit()
+        conn.close()
+        print(f"Baza danych zostala zainicjalizowana. w folderze {DB_PATH}")  # Dodano ten komunikat
+    except Exception as e:
+        print(f"Wystapil blad podczas inicjalizacji bazy danych: {e}") 
 
 
 def capture_camera():
@@ -387,7 +395,7 @@ def simulate_air_quality():
 
 # Uruchomienie serwera Flask i symulacji sensora
 if __name__ == '__main__':
-    init_db()
+    init_db(DB_PATH)
 
     ### WĄTKI SYMULUJĄCE ###
 
