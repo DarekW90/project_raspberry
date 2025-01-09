@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Measurements</title>
+    <title>AirQuality Measurements</title>
     <link rel="stylesheet" href="static/css/measurements.css">
 </head>
 <body>
     <header>
-        <h1>Latest Measurements</h1>
-        <p>Temperature and Humidity Data from Raspberry Pi</p>
+        <h1>Water AirQuality Control Data</h1>
+        <p>Monitoring AirQuality</p>
     </header>
     <div class="container">
-        <h2>Data Overview</h2>
+        <h2>Latest AirQuality Measurements</h2>
         <div class="image-container">
-            <img src="static/images/weather.jpg" alt="Weather detector" class="resized-image">
+            <img src="static/images/czujnik_pm_10.jpg" alt="Water Quality" class="resized-image">
             <p>Tak wygląda sensor</p>
         </div>
         <table>
@@ -22,8 +22,12 @@
                 <tr>
                     <th>ID</th>
                     <th>Timestamp</th>
-                    <th>Temperature (&deg;C)</th>
-                    <th>Humidity (%)</th>
+                    <th>temperature (&deg;C)</th>
+                    <th>pm2.5 (&micro;g/m³)</th>
+                    <th>pm10 (&micro;g/m³)</th>
+                    <th>humidity</th>
+                    <th>air_quality</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +37,9 @@
                         <td>{{ measurement[1] }}</td>
                         <td>{{ measurement[2] }}</td>
                         <td>{{ measurement[3] }}</td>
+                        <td>{{ measurement[4] }}</td>
+                        <td>{{ measurement[5] }}</td>
+                        <td>{{ measurement[6] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -41,10 +48,10 @@
     <footer>
         <div class="cta">
             <a href="/" class="button">Return to Home</a>
-            <a href="/measurements_page" class="button">Go to Latest Measurements</a>
-            <a href="/history_page" class="button">Go to History</a>
+            <a href="/ph_measurements_page" class="button">Go to Latest pH Measurements</a>
+            <a href="/ph_history_page" class="button">Go to pH History</a>
         </div>
-        <p>� 2025 Raspberry Pi Sensor App | All Rights Reserved</p>
+        <p>&copy; 2025 Raspberry Pi Sensor App | All Rights Reserved</p>
     </footer>
 </body>
 </html>

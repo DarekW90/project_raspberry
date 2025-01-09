@@ -30,16 +30,42 @@ def init_db():
         print(f"Tworzenie bazy danych w lokalizacji: {DB_PATH}")
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
+    # Tworzenie tabeli dla weather control
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS measurements (
+        CREATE TABLE IF NOT EXISTS weather_control (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             temperature REAL,
-            humidity REAL,
-            ph REAL,
-            adjustment TEXT
+            humidity REAL
         )
     """)
+
+    # Tworzenie tabeli dla air control
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS air_control (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            pm25 REAL,
+            pm10 REAL,
+            temperature REAL,
+            humidity REAL,
+            air_quality TEXT
+        )
+    """)
+
+    # Tworzenie tabeli dla water control
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS water_control (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            ph REAL,
+            adjustment TEXT,
+            current_ph REAL,
+            temperature REAL
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -156,7 +182,7 @@ def landing_page():
 def measurements_page():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM measurements ORDER BY timestamp DESC LIMIT 10")
+    cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
     measurements = cursor.fetchall()
     conn.close()
     # Przekaz dane pomiarow do szablonu
@@ -167,7 +193,7 @@ def measurements_page():
 def history_page():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM measurements ORDER BY timestamp")
+    cursor.execute("SELECT * FROM weather_control ORDER BY timestamp")
     measurements = cursor.fetchall()
     conn.close()
     # Przekaz dane pomiarow do szablonu
@@ -237,10 +263,27 @@ def video_feed():
 def ph_measurements_page():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, timestamp, temperature, ph, adjustment FROM measurements ORDER BY timestamp DESC LIMIT 20")
+    cursor.execute("""
+                   SELECT id, timestamp, temperature, ph, adjustment
+                   FROM water_control
+                   ORDER BY timestamp DESC LIMIT 20
+                   """)
     measurements = cursor.fetchall()
     conn.close()
     return render_template('aquarium.html', measurements=measurements)
+
+@app.route('/air_quality')
+def air_quality_page():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT id, timestamp, temperature, pm25, pm10, humidity, air_quality 
+                   FROM air_control 
+                   ORDER BY timestamp DESC LIMIT 20
+                   """)
+    measurements = cursor.fetchall()
+    conn.close()
+    return render_template('air_quality.html', measurements=measurements)
 
 
 ### FUNKCJE SYMULUJACE ###
@@ -256,7 +299,7 @@ def simulate_sensor():
         # Zapis danych do bazy
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO measurements (temperature, humidity) VALUES (?, ?)", (temperature, humidity))
+        cursor.execute("INSERT INTO weather_control (temperature, humidity) VALUES (?, ?)", (temperature, humidity))
         conn.commit()
         conn.close()
 
@@ -294,7 +337,7 @@ def simulate_ph_control():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO measurements (temperature, ph, adjustment) VALUES (?, ?, ?)",
+            "INSERT INTO water_control (temperature, ph, adjustment) VALUES (?, ?, ?)",
             (temperature, current_ph, adjustment_action)
         )
         conn.commit()
@@ -327,7 +370,7 @@ def simulate_air_quality():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO measurements (pm25, pm10, temperature, humidity, air_quality) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO air_control (pm25, pm10, temperature, humidity, air_quality) VALUES (?, ?, ?, ?, ?)",
             (pm25, pm10, temperature, humidity, air_quality)
         )
         conn.commit()
