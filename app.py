@@ -19,7 +19,7 @@ socketio = SocketIO(app)
 
 # Global variable to store the last frame
 camera_lock = Lock()
-last_frame = None
+LAST_FRAME = None
 
 # Konfiguracja bazy danych
 # DB_NAME = "measurements.db"
@@ -83,7 +83,7 @@ def init_db(db_path):
 
 def capture_camera():
     """Obsluguje kamere, odczytujac klatki i zapisujac je do globalnej zmiennej."""
-    last_frame = None
+    global LAST_FRAME
     try:
         camera = cv2.VideoCapture(0)
 
@@ -96,7 +96,7 @@ def capture_camera():
                 break
 
             with camera_lock:
-                last_frame = frame.copy()  # Aktualizuj globalna klatke
+                LAST_FRAME = frame.copy()  # Aktualizuj globalna klatke
 
             # Dodaj opoznienie, aby uniknac przeciazenia CPU
             time.sleep(0.05)
@@ -109,12 +109,12 @@ def capture_camera():
 
 def generate_frames():
     """Generuje strumien wideo z najnowszych klatek."""
-    last_frame = None
+    global LAST_FRAME
     while True:
         with camera_lock:
-            if last_frame is None:
+            if LAST_FRAME is None:
                 continue
-            _, buffer = cv2.imencode('.jpg', last_frame)
+            _, buffer = cv2.imencode('.jpg', LAST_FRAME)
             frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -123,7 +123,7 @@ def generate_frames():
 def detect_motion():
     """Wykrywa ruch na podstawie najnowszych klatek,
     zapisuje zdjecie i rysuje kwadrat wokol wykrytego ruchu."""
-    last_frame = None
+    global LAST_FRAME
     prev_frame_gray = None
 
     # Sciezka do folderu "phototrap"
@@ -136,9 +136,9 @@ def detect_motion():
 
     while True:
         with camera_lock:
-            if last_frame is None:
+            if LAST_FRAME is None:
                 continue
-            frame = last_frame.copy()
+            frame = LAST_FRAME.copy()
 
         # Przetwarzanie klatki
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
