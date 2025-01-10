@@ -9,11 +9,10 @@ import os
 import time
 import cv2
 import socketio
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
-from fastapi import BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 
 # Konfiguracja FastAPI
