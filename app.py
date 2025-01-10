@@ -1,13 +1,13 @@
-from flask import Flask, jsonify, request, render_template, Response
-from flask_socketio import SocketIO, emit
 from datetime import datetime
-import cv2
 import sqlite3
 import threading
-from threading import Lock # Lock do synchronizacji dostepu do zasobow
 import random
-import time
 import os
+import time
+import cv2
+from threading import Lock # Lock do synchronizacji dostepu do zasobow
+from flask import Flask, jsonify, request, render_template, Response
+from flask_socketio import SocketIO, emit
 
 # Konfiguracja Flask i SocketIO
 app = Flask(__name__)
@@ -16,7 +16,7 @@ socketio = SocketIO(app)
 
 # Global variable to store the last frame
 camera_lock = Lock()
-last_frame = None
+LAST_FRAME = None
 
 # Konfiguracja bazy danych
 # DB_NAME = "measurements.db"
@@ -80,7 +80,7 @@ def init_db(DB_PATH):
 
 def capture_camera():
     """Obsluguje kamere, odczytujac klatki i zapisujac je do globalnej zmiennej."""
-    global last_frame
+    global LAST_FRAME
     try:
         camera = cv2.VideoCapture(0)
         
@@ -93,7 +93,7 @@ def capture_camera():
                 break
 
             with camera_lock:
-                last_frame = frame.copy()  # Aktualizuj globaln? klatk?
+                LAST_FRAME = frame.copy()  # Aktualizuj globaln? klatk?
 
             # Dodaj opoznienie, aby uniknac przeciazenia CPU
             time.sleep(0.05)
@@ -106,12 +106,12 @@ def capture_camera():
 
 def generate_frames():
     """Generuje strumien wideo z najnowszych klatek."""
-    global last_frame
+    global LAST_FRAME
     while True:
         with camera_lock:
-            if last_frame is None:
+            if LAST_FRAME is None:
                 continue
-            _, buffer = cv2.imencode('.jpg', last_frame)
+            _, buffer = cv2.imencode('.jpg', LAST_FRAME)
             frame = buffer.tobytes()
         
         yield (b'--frame\r\n'
@@ -120,7 +120,7 @@ def generate_frames():
 
 def detect_motion():
     """Wykrywa ruch na podstawie najnowszych klatek, zapisuje zdjecie i rysuje kwadrat wokol wykrytego ruchu."""
-    global last_frame
+    global LAST_FRAME
     prev_frame_gray = None
 
     # Sciezka do folderu "phototrap"
@@ -133,9 +133,9 @@ def detect_motion():
 
     while True:
         with camera_lock:
-            if last_frame is None:
+            if LAST_FRAME is None:
                 continue
-            frame = last_frame.copy()
+            frame = LAST_FRAME.copy()
 
         # Przetwarzanie klatki
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -187,11 +187,23 @@ def detect_motion():
 
 @app.route('/')
 def landing_page():
+    """
+    Renderuje stronę docelową, zwracając szablon index.html.
+    Zwraca:
+    Wyrenderowany szablon index.html.
+    """
+
     return render_template('index.html')
 
 
 @app.route('/measurements_page')
 def measurements_page():
+    """
+    Pobiera najnowsze 10 pomiarów kontroli pogody z bazy danych i renderuje je w szablonie measurements.html.
+    Zwraca:
+    Wyrenderowany szablon z danymi pomiarów.
+    """
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
@@ -203,6 +215,12 @@ def measurements_page():
 
 @app.route('/history_page')
 def history_page():
+    """
+    Pobiera historyczne pomiary pogody z bazy danych i renderuje je w szablonie.
+    Zwraca:
+    Wyrenderowany szablon z historycznymi pomiarami pogody.
+    """
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp")
@@ -258,21 +276,45 @@ def set_alert():
 # Obsluga WebSocket
 @socketio.on('connect')
 def handle_connect():
+    """
+    Funkcja obsługująca połączenie klienta.
+    Wypisuje informację o połączeniu klienta oraz emituje wiadomość o statusie połączenia.
+    Parametry:
+        Brak
+    Zwraca:
+        Brak
+    """
+
     print("Klient polaczony")
     emit('status', {'message': 'Polaczono z serwerem Raspberry Pi'})
 
 
 @app.route('/door_bell_page')
 def door_bell_page():
+    """
+    Funkcja zwracająca szablon strony 'camera.html'.
+    :return: Szablon strony 'camera.html'.
+    """
+    
     return render_template('camera.html')
 
 
 @app.route('/video_feed')
 def video_feed():
+    """
+    Funkcja zwraca strumień wideo w formacie multipart/x-mixed-replace; boundary=frame.
+    Wykorzystuje funkcję generate_frames() do generowania kolejnych klatek wideo.
+    """
+
     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/aquarium')
 def ph_measurements_page():
+    """
+    Funkcja zwraca stronę z pomiarami pH.
+    :return: Szablon HTML strony z pomiarami pH.
+    """
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
@@ -286,6 +328,12 @@ def ph_measurements_page():
 
 @app.route('/air_quality')
 def air_quality_page():
+    """
+    Funkcja zwraca stronę z pomiarami jakości powietrza.
+    :return: Szablon HTML strony z pomiarami jakości powietrza.
+    :rtype: str
+    """
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
@@ -302,6 +350,14 @@ def air_quality_page():
 
 # Funkcja symulujaca dane z sensora
 def simulate_sensor():
+    """
+    Symuluje odczyty z czujnika temperatury i wilgotności.
+    Funkcja generuje losowe dane temperatury i wilgotności w określonym zakresie,
+    zapisuje je do bazy danych oraz wysyła przez WebSocket.
+    Returns:
+        None
+    """
+
     while True:
         # Generowanie losowych danych
         temperature = round(random.uniform(20.0, 30.0), 1)  # Temperatury w zakresie 20-30�C
@@ -324,6 +380,22 @@ def simulate_sensor():
 
 # Funkcja symulujaca kontrole pH wody
 def simulate_ph_control():
+    """
+    Symuluje kontrolę pH w akwarium.
+    Funkcja generuje losowe wartości pomiarowe dla pH i temperatury w zakresie określonym przez parametry.
+    Następnie symuluje regulację pH w akwarium na podstawie docelowego pH i szybkości zmiany pH.
+    Wyniki pomiarów i działania regulacji są wyświetlane na konsoli oraz zapisywane do bazy danych.
+    Parametry:
+    - target_ph (float): Docelowe pH wody (neutralne).
+    - adjustment_rate (float): Szybkość zmiany pH w wyniku regulacji.
+    Zwraca:
+    - None
+    Wymagane moduły:
+    - random
+    - sqlite3
+    - time
+    """
+
     target_ph = 7.0  # Docelowe pH wody (neutralne)
     adjustment_rate = 0.1  # Szybkosc zmiany pH w wyniku regulacji
 
@@ -361,6 +433,14 @@ def simulate_ph_control():
 
 # Funkcja symulujaca jakosc powietrza
 def simulate_air_quality():
+    """
+    Symuluje jakość powietrza poprzez generowanie losowych wartości pomiarowych PM2.5, PM10, temperatury i wilgotności.
+    Ocena jakości powietrza jest dokonywana na podstawie wartości PM2.5.
+    Wartości pomiarowe są zapisywane do bazy danych co 10 sekund.
+    Returns:
+        None
+    """
+
     while True:
         # Generowanie losowych wartosci pomiarowych
         pm25 = round(random.uniform(0.0, 100.0), 1)  # Poziom PM2.5 (0-100 �g/m�)
