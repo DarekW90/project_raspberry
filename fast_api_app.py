@@ -188,13 +188,14 @@ def detect_motion():
         time.sleep(0.1)  # Unikaj przeciazenia CPU
 
 @sio.event
-async def connect(sid, environ):
+async def connect(sid):
     """
     Nawiązuje połączenie z klientem.
     Parametry:
     - sid (str): Identyfikator sesji klienta.
     - environ (dict): Słownik zawierający informacje o środowisku.
-    Zadaniem tej funkcji jest nawiązanie połączenia z klientem i wyświetlenie informacji o nawiązanym połączeniu.
+    Zadaniem tej funkcji jest nawiązanie połączenia z
+    klientem i wyświetlenie informacji o nawiązanym połączeniu.
     Przykład użycia:
         connect('abc123', {'key': 'value'})
     """
@@ -290,11 +291,16 @@ async def history_page(request: Request):
     Parametry:
     - request (Request): Obiekt żądania HTTP.
     Zwracane wartości:
-    - templates.TemplateResponse: Obiekt odpowiedzi HTTP zawierający szablon HTML "measurements.html" wraz z danymi pomiarów.
+    - templates.TemplateResponse: Obiekt odpowiedzi HTTP
+    zawierający szablon HTML "measurements.html" wraz z danymi pomiarów.
     Wyjątki:
     - Brak.
     Opis:
-    Ta funkcja obsługuje żądanie HTTP dotyczące strony historii pomiarów. Łączy się z bazą danych, pobiera wszystkie pomiary z tabeli "weather_control" posortowane według znacznika czasowego, zamyka połączenie z bazą danych, a następnie zwraca odpowiedź HTTP zawierającą szablon HTML "measurements.html" wraz z danymi pomiarów.
+    Ta funkcja obsługuje żądanie HTTP dotyczące strony historii
+    pomiarów. Łączy się z bazą danych, pobiera wszystkie pomiary
+    z tabeli "weather_control" posortowane według znacznika czasowego,
+    zamyka połączenie z bazą danych, a następnie zwraca odpowiedź HTTP
+    zawierającą szablon HTML "measurements.html" wraz z danymi pomiarów.
     """
 
     conn=sqlite3.connect(db_path)
@@ -370,6 +376,7 @@ async def air_quality_page(request: Request):
 # Strumien wideo
 @app.get("/video_feed")
 async def video_feed():
+    """Zwraca strumien wideo z kamery."""
     return StreamingResponse(generate_frames(),
                 media_type='multipart/x-mixed-replace; boundary=frame')
 
@@ -384,6 +391,7 @@ async def get_latest_frame():
 
 # Symulacja sensora
 def simulate_sensor():
+    """Symuluje pomiary z czujnika."""
     while True:
         temperature=round(random.uniform(20.0, 30.0), 1)
         humidity=round(random.uniform(40.0, 60.0), 1)
@@ -400,6 +408,7 @@ def simulate_sensor():
 
 # Funkcja symulujaca kontrole pH
 def simulate_ph_control():
+    """Symuluje kontrole pH w akwarium."""
     target_ph=7.0
     adjustment_rate=0.1
     while True:
@@ -429,6 +438,7 @@ def simulate_ph_control():
 
 # Symulacja jakosci powietrza
 def simulate_air_quality():
+    """Symuluje pomiary jakosci powietrza."""
     while True:
         pm25=round(random.uniform(0.0, 100.0), 1)
         pm10=round(random.uniform(0.0, 150.0), 1)
