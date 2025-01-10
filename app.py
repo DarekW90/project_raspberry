@@ -21,9 +21,6 @@ socketio = SocketIO(app)
 camera_lock = Lock()
 LAST_FRAME = None
 
-# Konfiguracja bazy danych
-# DB_NAME = "measurements.db"
-
 base_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(base_dir, "measurements.db")
 
