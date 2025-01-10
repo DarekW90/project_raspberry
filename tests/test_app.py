@@ -1,3 +1,5 @@
+"""Klasa testowa dla testowania tras w aplikacji Flask."""
+
 import unittest
 import requests
 
@@ -90,7 +92,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
         Jeśli wystąpi błąd połączenia, test kończy się niepowodzeniem
         i wypisuje komunikat "Nie można połączyć się z serwerem: Akwarium".
         """
-            self.fail("Nie można połączyć się z serwerem: Akwarium")
+        self.fail("Nie można połączyć się z serwerem: Akwarium")
 
         try:
             response = requests.get(f"{self.BASE_URL}/aquarium")
@@ -111,7 +113,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
             AssertionError: Jeśli kod odpowiedzi jest inny niż 200.
             self.fail: Jeśli nie można połączyć się z serwerem.
         """
-            self.fail("Nie można połączyć się z serwerem: Jakości Powietrza")
+        self.fail("Nie można połączyć się z serwerem: Jakości Powietrza")
 
         try:
             response = requests.get(f"{self.BASE_URL}/air_quality")
@@ -128,7 +130,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
         Jeśli nie można połączyć się z serwerem,
         test kończy się niepowodzeniem.
         """
-            self.fail("Nie można połączyć się z serwerem: Kamera")
+        self.fail("Nie można połączyć się z serwerem: Kamera")
 
         try:
             response = requests.get(f"{self.BASE_URL}/door_bell_page")

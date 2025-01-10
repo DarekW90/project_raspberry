@@ -1,3 +1,8 @@
+"""This file contains unit tests for the database functions. 
+It tests the insertion and retrieval of data in the 
+weather_control, air_control, and water_control tables. 
+It also tests the update of data in the weather_control table 
+and the deletion of data from the air_control table."""
 import os
 import sys
 import sqlite3
@@ -113,8 +118,6 @@ class TestDatabaseFunctions(unittest.TestCase):
         - result[2] powinno być równe 12.5
         - result[3] powinno być równe 20.0
         """
-        # kod testu
-        pass
 
         conn=sqlite3.connect(DB_PATH)
         cursor=conn.cursor()
@@ -161,8 +164,6 @@ class TestDatabaseFunctions(unittest.TestCase):
         jest pusty oraz czy wartości w kolumnach ph i adjustment
         są zgodne z oczekiwanymi.
         """
-        # Test code...
-        pass
 
         conn=sqlite3.connect(DB_PATH)
         cursor=conn.cursor()
