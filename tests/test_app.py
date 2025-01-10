@@ -72,7 +72,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
             AssertionError: Jeśli status odpowiedzi
             nie jest równy 200.
         """
-            self.fail("Nie można połączyć się z serwerem: Measurements Page")
+        self.fail("Nie można połączyć się z serwerem: Measurements Page")
 
         try:
             response = requests.get(f"{self.BASE_URL}/measurements_page")

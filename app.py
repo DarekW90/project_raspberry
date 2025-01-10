@@ -476,10 +476,10 @@ def simulate_air_quality():
         else:
             air_quality = "Zla"
 
-        print(f"Symulacja Jakosci Powietrza:
+        print(f"""Symulacja Jakosci Powietrza:
               PM2.5={pm25} ug/m3, PM10={pm10} ug/m3,
               Temp={temperature}C, Wilgotnosc={humidity}%,
-              Jakosc={air_quality}")
+              Jakosc={air_quality}""")
 
         # Zapis danych do bazy
         conn = sqlite3.connect(DB_PATH)

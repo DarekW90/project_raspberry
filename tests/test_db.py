@@ -39,7 +39,7 @@ class TestDatabaseFunctions(unittest.TestCase):
         if not os.path.exists(DB_PATH):
             print(f"Baza danych {DB_PATH} nie istnieje. Tworzenie nowej...")
             init_db(DB_PATH)
-        
+
         conn=sqlite3.connect(DB_PATH)
         cursor=conn.cursor()
 
@@ -72,7 +72,7 @@ class TestDatabaseFunctions(unittest.TestCase):
         cursor=conn.cursor()
 
         cursor.execute("""INSERT INTO weather_control
-                       (temperature, humidity) 
+                       (temperature, humidity)
                        VALUES (?, ?)""", (22.5, 45.0))
         conn.commit()
 
