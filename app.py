@@ -1,3 +1,7 @@
+"""
+Moduł aplikacji obsługującej Raspberry Pi z wykorzystaniem Flask i SocketIO.
+"""
+from threading import Lock # Lock do synchronizacji dostepu do zasobow
 from datetime import datetime
 import sqlite3
 import threading
@@ -5,7 +9,6 @@ import random
 import os
 import time
 import cv2
-from threading import Lock # Lock do synchronizacji dostepu do zasobow
 from flask import Flask, jsonify, request, render_template, Response
 from flask_socketio import SocketIO, emit
 
@@ -16,24 +19,24 @@ socketio = SocketIO(app)
 
 # Global variable to store the last frame
 camera_lock = Lock()
-LAST_FRAME = None
+last_frame = None
 
 # Konfiguracja bazy danych
 # DB_NAME = "measurements.db"
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "measurements.db")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, "measurements.db")
 
-def init_db(DB_PATH):
+def init_db(db_path):
     """Inicjalizacja bazy danych."""
 
-    print(f"DB_PATH: {os.path.abspath(DB_PATH)}")
+    print(f"db_path: {os.path.abspath(db_path)}")
 
-    if not os.path.exists(DB_PATH):
+    if not os.path.exists(db_path):
         print("Baza danych nie istnieje. Tworze nowa...")
 
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Tworzenie tabeli dla weather control
@@ -73,17 +76,17 @@ def init_db(DB_PATH):
 
         conn.commit()
         conn.close()
-        print(f"Baza danych zostala zainicjalizowana. w folderze {DB_PATH}")  # Dodano ten komunikat
-    except Exception as e:
+        print(f"Baza danych zostala zainicjalizowana. w folderze {db_path}")  # Dodano ten komunikat
+    except ValueError as e:
         print(f"Wystapil blad podczas inicjalizacji bazy danych: {e}")
 
 
 def capture_camera():
     """Obsluguje kamere, odczytujac klatki i zapisujac je do globalnej zmiennej."""
-    global LAST_FRAME
+    global last_frame
     try:
         camera = cv2.VideoCapture(0)
-        
+
         if not camera.isOpened():
             raise RuntimeError("Nie mozna uzyskac dostepu do kamery.")
 
@@ -93,7 +96,7 @@ def capture_camera():
                 break
 
             with camera_lock:
-                LAST_FRAME = frame.copy()  # Aktualizuj globalna klatke
+                last_frame = frame.copy()  # Aktualizuj globalna klatke
 
             # Dodaj opoznienie, aby uniknac przeciazenia CPU
             time.sleep(0.05)
@@ -106,12 +109,12 @@ def capture_camera():
 
 def generate_frames():
     """Generuje strumien wideo z najnowszych klatek."""
-    global LAST_FRAME
+    global last_frame
     while True:
         with camera_lock:
-            if LAST_FRAME is None:
+            if last_frame is None:
                 continue
-            _, buffer = cv2.imencode('.jpg', LAST_FRAME)
+            _, buffer = cv2.imencode('.jpg', last_frame)
             frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -120,7 +123,7 @@ def generate_frames():
 def detect_motion():
     """Wykrywa ruch na podstawie najnowszych klatek,
     zapisuje zdjecie i rysuje kwadrat wokol wykrytego ruchu."""
-    global LAST_FRAME
+    global last_frame
     prev_frame_gray = None
 
     # Sciezka do folderu "phototrap"
@@ -133,9 +136,9 @@ def detect_motion():
 
     while True:
         with camera_lock:
-            if LAST_FRAME is None:
+            if last_frame is None:
                 continue
-            frame = LAST_FRAME.copy()
+            frame = last_frame.copy()
 
         # Przetwarzanie klatki
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -207,9 +210,9 @@ def measurements_page():
     Wyrenderowany szablon z danymi pomiarów.
     """
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("""SELECT * FROM weather_control 
+    cursor.execute("""SELECT * FROM weather_control
                    ORDER BY timestamp DESC LIMIT 10""")
     measurements = cursor.fetchall()
     conn.close()
@@ -225,7 +228,7 @@ def history_page():
     Wyrenderowany szablon z historycznymi pomiarami pogody.
     """
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp")
     measurements = cursor.fetchall()
@@ -238,7 +241,7 @@ def history_page():
 @app.route('/measurements', methods=['GET'])
 def get_measurements():
     """Zwraca ostatnie pomiary z bazy danych."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM measurements ORDER BY timestamp DESC LIMIT 10")
     rows = cursor.fetchall()
@@ -252,7 +255,7 @@ def get_measurements():
 @app.route('/history', methods=['GET'])
 def get_history():
     """Zwraca wszystkie pomiary."""
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM measurements")
     rows = cursor.fetchall()
@@ -300,7 +303,7 @@ def door_bell_page():
     Funkcja zwracająca szablon strony 'camera.html'.
     :return: Szablon strony 'camera.html'.
     """
-    
+
     return render_template('camera.html')
 
 
@@ -323,7 +326,7 @@ def ph_measurements_page():
     :return: Szablon HTML strony z pomiarami pH.
     """
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("""
                    SELECT id, timestamp, temperature, ph, adjustment
@@ -342,7 +345,7 @@ def air_quality_page():
     :rtype: str
     """
 
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("""
                    SELECT id, timestamp, temperature,
@@ -374,9 +377,9 @@ def simulate_sensor():
         temperature = round(random.uniform(20.0, 30.0), 1)
         humidity = round(random.uniform(40.0, 60.0), 1)
         print(f"Symulacja: Temp={temperature}C, Wilgotnosc={humidity}%")
-        
+
         # Zapis danych do bazy
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("""INSERT INTO weather_control
                        (temperature, humidity)
@@ -387,7 +390,7 @@ def simulate_sensor():
 
         # Wysylanie danych przez WebSocket
         socketio.emit('measurement', {'temperature': temperature, 'humidity': humidity})
-        
+
         # Odczyt co 10 sekund
         time.sleep(10)
 
@@ -421,7 +424,7 @@ def simulate_ph_control():
         current_ph = round(random.uniform(6.0, 8.0), 2)
         temperature = round(random.uniform(25.0, 30.0), 1)
         # humidity = round(random.uniform(40.0, 60.0), 1)
-        
+
         # Symulacja regulacji pH
         if current_ph < target_ph:
             current_ph = round(current_ph + adjustment_rate, 2)
@@ -435,7 +438,7 @@ def simulate_ph_control():
         print(f"Symulacja Akwarium: Temp={temperature}C, pH={current_ph} ({adjustment_action})")
 
         # Zapis danych do bazy
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute(
             """INSERT INTO water_control
@@ -482,7 +485,7 @@ def simulate_air_quality():
               Jakosc={air_quality}""")
 
         # Zapis danych do bazy
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute(
             """INSERT INTO air_control
@@ -499,7 +502,7 @@ def simulate_air_quality():
 
 # Uruchomienie serwera Flask i symulacji sensora
 if __name__ == '__main__':
-    init_db(DB_PATH)
+    init_db(db_path)
 
     ### WATKI SYMULUJACE ###
 
