@@ -189,14 +189,37 @@ def detect_motion():
 
 @sio.event
 async def connect(sid, environ):
+    """
+    Nawiązuje połączenie z klientem.
+    Parametry:
+    - sid (str): Identyfikator sesji klienta.
+    - environ (dict): Słownik zawierający informacje o środowisku.
+    Zadaniem tej funkcji jest nawiązanie połączenia z klientem i wyświetlenie informacji o nawiązanym połączeniu.
+    Przykład użycia:
+        connect('abc123', {'key': 'value'})
+    """
+
     print(f"Połączenie nawiązane: {sid}")
 
 @sio.event
 async def disconnect(sid):
+    """
+    Funkcja asynchroniczna odpowiedzialna za zakończenie połączenia.
+    :param sid: Identyfikator sesji połączenia.
+    """
+
     print(f"Połączenie zakończone: {sid}")
 
 @app.on_event("startup")
 def startup_event():
+    """
+    Funkcja inicjalizująca aplikację i uruchamiająca wątki do symulacji danych oraz obsługi kamery.
+    Inicjalizuje bazę danych.
+    Tworzy wątki do symulacji kontroli pH, czujnika oraz jakości powietrza.
+    Tworzy wątek do obsługi kamery.
+    Uruchamia funkcję wykrywania ruchu i kamery w tle.
+    """
+
     init_db(db_path)
 
     # Watki do symulacji danych
@@ -229,11 +252,27 @@ def startup_event():
 # Strona glowna
 @app.get("/", response_class=HTMLResponse)
 async def landing_page(request: Request):
+    """
+    Obsługuje żądanie strony głównej.
+    Parametry:
+    - request (Request): Obiekt żądania.
+    Zwraca:
+    - templates.TemplateResponse: Obiekt odpowiedzi z szablonem strony głównej.
+    """
+
     return templates.TemplateResponse("index.html", {"request": request})
 
 # Strona z pomiarami
 @app.get("/measurements_page", response_class=HTMLResponse)
 async def measurements_page(request: Request):
+    """
+    Funkcja obsługująca stronę z pomiarami.
+    Parametry:
+    - request (Request): Obiekt żądania HTTP.
+    Zwraca:
+    - TemplateResponse: Obiekt odpowiedzi HTTP zawierający szablon HTML z pomiarami.
+    """
+
     conn=sqlite3.connect(db_path)
     cursor=conn.cursor()
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
@@ -246,6 +285,18 @@ async def measurements_page(request: Request):
 # Strona z historia
 @app.get("/history_page", response_class=HTMLResponse)
 async def history_page(request: Request):
+    """
+    Funkcja obsługująca stronę historii pomiarów.
+    Parametry:
+    - request (Request): Obiekt żądania HTTP.
+    Zwracane wartości:
+    - templates.TemplateResponse: Obiekt odpowiedzi HTTP zawierający szablon HTML "measurements.html" wraz z danymi pomiarów.
+    Wyjątki:
+    - Brak.
+    Opis:
+    Ta funkcja obsługuje żądanie HTTP dotyczące strony historii pomiarów. Łączy się z bazą danych, pobiera wszystkie pomiary z tabeli "weather_control" posortowane według znacznika czasowego, zamyka połączenie z bazą danych, a następnie zwraca odpowiedź HTTP zawierającą szablon HTML "measurements.html" wraz z danymi pomiarów.
+    """
+
     conn=sqlite3.connect(db_path)
     cursor=conn.cursor()
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp")
@@ -258,6 +309,14 @@ async def history_page(request: Request):
 # Strona z kamera
 @app.get("/door_bell_page", response_class=HTMLResponse)
 async def door_bell_page(request: Request):
+    """
+    Obsługuje żądanie strony dzwonka do drzwi.
+    Parametry:
+    - request (Request): Obiekt żądania HTTP.
+    Zwraca:
+    - templates.TemplateResponse: Obiekt odpowiedzi HTTP z szablonem strony kamery.
+    """
+
     return templates.TemplateResponse("camera.html", {"request": request})
 
 # Strona z aquarium
