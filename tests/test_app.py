@@ -43,7 +43,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
             else:
                 print("Server is running!")
         except requests.exceptions.RequestException:
-            self.fail(f"Failed to connect to the server")
+            self.fail("Failed to connect to the server")
 
     def test_landing_page(self):
         """
