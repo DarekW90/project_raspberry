@@ -1,7 +1,7 @@
 // ustawienie adresu serwera WebSocket
 const socket = io.connect('http://192.168.0.18:5000');
 
-// Flaga zapobiegaj?ca wielokrotnemu wlaczaniu alertu w krotkim czasie
+// Flaga zapobiegajaca wielokrotnemu wlaczaniu alertu w krotkim czasie
 let alertActive = false;
 
 // Funkcja do wyswietlania popupu

@@ -166,7 +166,7 @@ def detect_motion():
             print("Ruch wykryty!")
             socketio.emit('motion', {'status': 'motion_detected'})
 
-            # Zapisz zdj?cie
+            # Zapisz zdjecie
             timestamp = datetime.now().strftime("%d-%m-%Y_%H:%M:%S")
             filename = f"picture_{timestamp}.jpg"
 
@@ -397,7 +397,7 @@ def simulate_air_quality():
 if __name__ == '__main__':
     init_db(DB_PATH)
 
-    ### WĄTKI SYMULUJĄCE ###
+    ### WATKI SYMULUJACE ###
 
     # Wątek do symulacji sensora pH
     sensor_thread = threading.Thread(target=simulate_ph_control)
@@ -415,9 +415,9 @@ if __name__ == '__main__':
     sensor_thread.start()
 
 
-    ### KONIEC WĄTKÓW SYMULUJĄCYCH ###
+    ### KONIEC WATKOW SYMULUJACYCH ###
 
-    # W?tek obs?uguj?cy kamer?
+    # Watek obslugujacy kamere
     camera_thread = threading.Thread(target=capture_camera)
     camera_thread.daemon = True
     camera_thread.start()

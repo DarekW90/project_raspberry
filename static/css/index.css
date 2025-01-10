@@ -39,7 +39,7 @@ th {
     align-items: center; /* Wyr�wnanie pionowe */
     flex-wrap: wrap; /* Zawijanie element�w */
     margin: 20px 0; /* Dystans od g�ry i do?u */
-    border: #333 1px solid; /* Grubo?? i kolor obramowania */
+    /* border: #333 1px solid; Grubo?? i kolor obramowania */
 }
 .cta {
     text-align: center;
