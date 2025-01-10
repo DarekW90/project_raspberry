@@ -1,3 +1,5 @@
+""" Fast Api version of the project """
+
 from threading import Lock
 from datetime import datetime
 import sqlite3
@@ -39,7 +41,7 @@ def init_db(db_path):
     """Inicjalizacja bazy danych."""
     if not os.path.exists(db_path):
         print("Baza danych nie istnieje. Tworze nowa...")
-    
+
     try:
         conn=sqlite3.connect(db_path)
         cursor=conn.cursor()
@@ -237,7 +239,9 @@ async def measurements_page(request: Request):
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
     measurements=cursor.fetchall()
     conn.close()
-    return templates.TemplateResponse("measurements.html", {"request": request, "measurements": measurements})
+    return templates.TemplateResponse("measurements.html",
+                                      {"request": request,
+                                       "measurements": measurements})
 
 # Strona z historia
 @app.get("/history_page", response_class=HTMLResponse)
@@ -247,7 +251,9 @@ async def history_page(request: Request):
     cursor.execute("SELECT * FROM weather_control ORDER BY timestamp")
     measurements=cursor.fetchall()
     conn.close()
-    return templates.TemplateResponse("measurements.html", {"request": request, "measurements": measurements})
+    return templates.TemplateResponse("measurements.html",
+                                      {"request": request,
+                                       "measurements": measurements})
 
 # Strona z kamera
 @app.get("/door_bell_page", response_class=HTMLResponse)
