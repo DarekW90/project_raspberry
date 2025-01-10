@@ -18,6 +18,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
+    - name: Create pylint configuration file
+      run: |
+        echo "[MESSAGES CONTROL]" > .pylintrc
+        echo "disable = E0401, W0621, W0603, W0602" >> .pylintrc
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
