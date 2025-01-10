@@ -38,6 +38,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
 
         try:
             response = requests.get(self.BASE_URL)
+            # print(f"Odpowiedz dla serwera : {response}")
             if response.status_code != 200:
                 print("Server offline")
             else:
@@ -59,6 +60,7 @@ class FlaskRoutesTestCase(unittest.TestCase):
 
         try:
             response = requests.get(f"{self.BASE_URL}/")
+            # print(f"Odpowiedz dla landing page : {response}")
             self.assertEqual(response.status_code, 200)
             print("Test response: dla strony glownej - OK")
         except requests.exceptions.ConnectionError:
@@ -74,10 +76,10 @@ class FlaskRoutesTestCase(unittest.TestCase):
             AssertionError: Jesli status odpowiedzi
             nie jest rowny 200.
         """
-        self.fail("Nie mozna polaczyc sie z serwerem: Measurements Page")
 
         try:
             response = requests.get(f"{self.BASE_URL}/measurements_page")
+            # print(f"Odpowiedz dla measurement page : {response}")
             self.assertEqual(response.status_code, 200)
             print("Test response: dla strony z pomiarami - OK")
         except requests.exceptions.ConnectionError:
@@ -92,10 +94,10 @@ class FlaskRoutesTestCase(unittest.TestCase):
         Jesli wystapi blad polaczenia, test konczy sie niepowodzeniem
         i wypisuje komunikat "Nie mozna polaczyc sie z serwerem: Akwarium".
         """
-        self.fail("Nie mozna polaczyc sie z serwerem: Akwarium")
 
         try:
             response = requests.get(f"{self.BASE_URL}/aquarium")
+            # print(f"Odpowiedz dla aquarium page : {response}")
             self.assertEqual(response.status_code, 200)
             print("Test response: dla strony z Akwarium - OK")
         except requests.exceptions.ConnectionError:
@@ -113,10 +115,10 @@ class FlaskRoutesTestCase(unittest.TestCase):
             AssertionError: Jesli kod odpowiedzi jest inny niz 200.
             self.fail: Jesli nie mozna polaczyc sie z serwerem.
         """
-        self.fail("Nie mozna polaczyc sie z serwerem: Jakosci Powietrza")
 
         try:
             response = requests.get(f"{self.BASE_URL}/air_quality")
+            # print(f"Odpowiedz dla air quality page : {response}")
             self.assertEqual(response.status_code, 200)
             print("Test response: dla strony z Jakosci Powietrza - OK")
         except requests.exceptions.ConnectionError:
@@ -130,10 +132,10 @@ class FlaskRoutesTestCase(unittest.TestCase):
         Jesli nie mozna polaczyc sie z serwerem,
         test konczy sie niepowodzeniem.
         """
-        self.fail("Nie mozna polaczyc sie z serwerem: Kamera")
 
         try:
             response = requests.get(f"{self.BASE_URL}/door_bell_page")
+            # print(f"Odpowiedz dla camera page : {response}")
             self.assertEqual(response.status_code, 200)
             print("Test response: dla strony z Kamera - OK")
         except requests.exceptions.ConnectionError:
