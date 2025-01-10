@@ -1,13 +1,12 @@
 """ Fast Api version of the project """
-# Standard library imports
 import os
 from datetime import datetime
+
 import sqlite3
 import threading
+from threading import Lock
 import time
 import random
-
-# Third-party imports
 import cv2
 import socketio
 from fastapi import FastAPI
@@ -15,7 +14,6 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 from fastapi.staticfiles import StaticFiles
-
 
 # Konfiguracja FastAPI
 app=FastAPI()
