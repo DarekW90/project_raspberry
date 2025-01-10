@@ -75,7 +75,7 @@ def init_db(DB_PATH):
         conn.close()
         print(f"Baza danych zostala zainicjalizowana. w folderze {DB_PATH}")  # Dodano ten komunikat
     except Exception as e:
-        print(f"Wystapil blad podczas inicjalizacji bazy danych: {e}") 
+        print(f"Wystapil blad podczas inicjalizacji bazy danych: {e}")
 
 
 def capture_camera():
@@ -93,7 +93,7 @@ def capture_camera():
                 break
 
             with camera_lock:
-                LAST_FRAME = frame.copy()  # Aktualizuj globaln? klatk?
+                LAST_FRAME = frame.copy()  # Aktualizuj globalna klatke
 
             # Dodaj opoznienie, aby uniknac przeciazenia CPU
             time.sleep(0.05)
@@ -113,13 +113,13 @@ def generate_frames():
                 continue
             _, buffer = cv2.imencode('.jpg', LAST_FRAME)
             frame = buffer.tobytes()
-        
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 def detect_motion():
-    """Wykrywa ruch na podstawie najnowszych klatek, zapisuje zdjecie i rysuje kwadrat wokol wykrytego ruchu."""
+    """Wykrywa ruch na podstawie najnowszych klatek,
+    zapisuje zdjecie i rysuje kwadrat wokol wykrytego ruchu."""
     global LAST_FRAME
     prev_frame_gray = None
 
@@ -151,7 +151,9 @@ def detect_motion():
         thresh = cv2.dilate(thresh, None, iterations=2)
 
         # Znajd? kontury
-        contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(thresh.copy(),
+                                       cv2.RETR_EXTERNAL,
+                                       cv2.CHAIN_APPROX_SIMPLE)
         motion_detected = False
 
         for contour in contours:
@@ -199,14 +201,16 @@ def landing_page():
 @app.route('/measurements_page')
 def measurements_page():
     """
-    Pobiera najnowsze 10 pomiarów kontroli pogody z bazy danych i renderuje je w szablonie measurements.html.
+    Pobiera najnowsze 10 pomiarów kontroli pogody z 
+    bazy danych i renderuje je w szablonie measurements.html.
     Zwraca:
     Wyrenderowany szablon z danymi pomiarów.
     """
 
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
+    cursor.execute("""SELECT * FROM weather_control 
+                   ORDER BY timestamp DESC LIMIT 10""")
     measurements = cursor.fetchall()
     conn.close()
     # Przekaz dane pomiarow do szablonu
@@ -267,7 +271,7 @@ def set_alert():
     threshold_temp = data.get("temperature", None)
     threshold_hum = data.get("humidity", None)
     if threshold_temp is not None:
-        print(f"Ustawiono prog alertu dla temperatury: {threshold_temp}�C")
+        print(f"Ustawiono prog alertu dla temperatury: {threshold_temp}C")
     if threshold_hum is not None:
         print(f"Ustawiono prog alertu dla wilgotnosci: {threshold_hum}%")
     return jsonify({"message": "Alert ustawiony!"}), 200
@@ -278,7 +282,8 @@ def set_alert():
 def handle_connect():
     """
     Funkcja obsługująca połączenie klienta.
-    Wypisuje informację o połączeniu klienta oraz emituje wiadomość o statusie połączenia.
+    Wypisuje informację o połączeniu klienta oraz 
+    emituje wiadomość o statusie połączenia.
     Parametry:
         Brak
     Zwraca:
@@ -302,11 +307,14 @@ def door_bell_page():
 @app.route('/video_feed')
 def video_feed():
     """
-    Funkcja zwraca strumień wideo w formacie multipart/x-mixed-replace; boundary=frame.
-    Wykorzystuje funkcję generate_frames() do generowania kolejnych klatek wideo.
+    Funkcja zwraca strumień wideo w formacie
+    multipart/x-mixed-replace; boundary=frame.
+    Wykorzystuje funkcję generate_frames() do
+    generowania kolejnych klatek wideo.
     """
 
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/aquarium')
 def ph_measurements_page():
@@ -324,7 +332,7 @@ def ph_measurements_page():
                    """)
     measurements = cursor.fetchall()
     conn.close()
-    return render_template('aquarium.html', measurements=measurements)
+    return render_template('aquarium.html',measurements=measurements)
 
 @app.route('/air_quality')
 def air_quality_page():
@@ -337,13 +345,15 @@ def air_quality_page():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-                   SELECT id, timestamp, temperature, pm25, pm10, humidity, air_quality 
+                   SELECT id, timestamp, temperature,
+                   pm25, pm10, humidity, air_quality 
                    FROM air_control 
                    ORDER BY timestamp DESC LIMIT 20
                    """)
     measurements = cursor.fetchall()
     conn.close()
-    return render_template('air_quality.html', measurements=measurements)
+    return render_template('air_quality.html',
+                           measurements=measurements)
 
 
 ### FUNKCJE SYMULUJACE ###
@@ -352,7 +362,8 @@ def air_quality_page():
 def simulate_sensor():
     """
     Symuluje odczyty z czujnika temperatury i wilgotności.
-    Funkcja generuje losowe dane temperatury i wilgotności w określonym zakresie,
+    Funkcja generuje losowe dane temperatury i wilgotności
+    w określonym zakresie,
     zapisuje je do bazy danych oraz wysyła przez WebSocket.
     Returns:
         None
@@ -360,14 +371,17 @@ def simulate_sensor():
 
     while True:
         # Generowanie losowych danych
-        temperature = round(random.uniform(20.0, 30.0), 1)  # Temperatury w zakresie 20-30�C
-        humidity = round(random.uniform(40.0, 60.0), 1)     # Wilgotnosc w zakresie 40-60%
+        temperature = round(random.uniform(20.0, 30.0), 1)
+        humidity = round(random.uniform(40.0, 60.0), 1)
         print(f"Symulacja: Temp={temperature}C, Wilgotnosc={humidity}%")
         
         # Zapis danych do bazy
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO weather_control (temperature, humidity) VALUES (?, ?)", (temperature, humidity))
+        cursor.execute("""INSERT INTO weather_control
+                       (temperature, humidity)
+                       VALUES (?, ?)""",
+                       (temperature, humidity))
         conn.commit()
         conn.close()
 
@@ -382,9 +396,12 @@ def simulate_sensor():
 def simulate_ph_control():
     """
     Symuluje kontrolę pH w akwarium.
-    Funkcja generuje losowe wartości pomiarowe dla pH i temperatury w zakresie określonym przez parametry.
-    Następnie symuluje regulację pH w akwarium na podstawie docelowego pH i szybkości zmiany pH.
-    Wyniki pomiarów i działania regulacji są wyświetlane na konsoli oraz zapisywane do bazy danych.
+    Funkcja generuje losowe wartości pomiarowe dla
+    pH i temperatury w zakresie określonym przez parametry.
+    Następnie symuluje regulację pH w akwarium na podstawie
+    docelowego pH i szybkości zmiany pH.
+    Wyniki pomiarów i działania regulacji są wyświetlane
+    na konsoli oraz zapisywane do bazy danych.
     Parametry:
     - target_ph (float): Docelowe pH wody (neutralne).
     - adjustment_rate (float): Szybkość zmiany pH w wyniku regulacji.
@@ -396,21 +413,21 @@ def simulate_ph_control():
     - time
     """
 
-    target_ph = 7.0  # Docelowe pH wody (neutralne)
-    adjustment_rate = 0.1  # Szybkosc zmiany pH w wyniku regulacji
+    target_ph = 7.0
+    adjustment_rate = 0.1
 
     while True:
         # Generowanie losowych wartosci pomiarowych
-        current_ph = round(random.uniform(6.0, 8.0), 2)  # pH w zakresie 6-8
-        temperature = round(random.uniform(25.0, 30.0), 1)  # Temperatury w zakresie 20-30C
-        # humidity = round(random.uniform(40.0, 60.0), 1)  # Wilgotnosc w zakresie 40-60%
+        current_ph = round(random.uniform(6.0, 8.0), 2)
+        temperature = round(random.uniform(25.0, 30.0), 1)
+        # humidity = round(random.uniform(40.0, 60.0), 1)
         
         # Symulacja regulacji pH
         if current_ph < target_ph:
-            current_ph = round(current_ph + adjustment_rate, 2)  # Dodaj zasade
+            current_ph = round(current_ph + adjustment_rate, 2)
             adjustment_action = "Dodano zasade"
         elif current_ph > target_ph:
-            current_ph = round(current_ph - adjustment_rate, 2)  # Dodaj kwas
+            current_ph = round(current_ph - adjustment_rate, 2)
             adjustment_action = "Dodano kwas"
         else:
             adjustment_action = "Brak dzialania"
@@ -421,7 +438,9 @@ def simulate_ph_control():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO water_control (temperature, ph, adjustment) VALUES (?, ?, ?)",
+            """INSERT INTO water_control
+            (temperature, ph, adjustment)
+            VALUES (?, ?, ?)""",
             (temperature, current_ph, adjustment_action)
         )
         conn.commit()
@@ -434,7 +453,8 @@ def simulate_ph_control():
 # Funkcja symulujaca jakosc powietrza
 def simulate_air_quality():
     """
-    Symuluje jakość powietrza poprzez generowanie losowych wartości pomiarowych PM2.5, PM10, temperatury i wilgotności.
+    Symuluje jakość powietrza poprzez generowanie
+    losowych wartości pomiarowych PM2.5, PM10, temperatury i wilgotności.
     Ocena jakości powietrza jest dokonywana na podstawie wartości PM2.5.
     Wartości pomiarowe są zapisywane do bazy danych co 10 sekund.
     Returns:
@@ -443,10 +463,10 @@ def simulate_air_quality():
 
     while True:
         # Generowanie losowych wartosci pomiarowych
-        pm25 = round(random.uniform(0.0, 100.0), 1)  # Poziom PM2.5 (0-100 �g/m�)
-        pm10 = round(random.uniform(0.0, 150.0), 1)  # Poziom PM10 (0-150 �g/m�)
-        temperature = round(random.uniform(15.0, 35.0), 1)  # Temperatura (15-35�C)
-        humidity = round(random.uniform(30.0, 70.0), 1)  # Wilgotno?? (30-70%)
+        pm25 = round(random.uniform(0.0, 100.0), 1)
+        pm10 = round(random.uniform(0.0, 150.0), 1)
+        temperature = round(random.uniform(15.0, 35.0), 1)
+        humidity = round(random.uniform(30.0, 70.0), 1)
 
         # Ocena jako?ci powietrza na podstawie PM2.5
         if pm25 < 50:
@@ -456,13 +476,18 @@ def simulate_air_quality():
         else:
             air_quality = "Zla"
 
-        print(f"Symulacja Jakosci Powietrza: PM2.5={pm25} ug/m3, PM10={pm10} ug/m3, Temp={temperature}C, Wilgotnosc={humidity}%, Jakosc={air_quality}")
+        print(f"Symulacja Jakosci Powietrza:
+              PM2.5={pm25} ug/m3, PM10={pm10} ug/m3,
+              Temp={temperature}C, Wilgotnosc={humidity}%,
+              Jakosc={air_quality}")
 
         # Zapis danych do bazy
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO air_control (pm25, pm10, temperature, humidity, air_quality) VALUES (?, ?, ?, ?, ?)",
+            """INSERT INTO air_control
+            (pm25, pm10, temperature, humidity, air_quality)
+            VALUES (?, ?, ?, ?, ?)""",
             (pm25, pm10, temperature, humidity, air_quality)
         )
         conn.commit()
@@ -470,7 +495,6 @@ def simulate_air_quality():
 
         # Odczyt co 10 sekund
         time.sleep(10)
-
 
 
 # Uruchomienie serwera Flask i symulacji sensora
