@@ -153,7 +153,7 @@ def detect_motion():
         _, thresh = cv2.threshold(frame_delta, 25, 255, cv2.THRESH_BINARY)
         thresh = cv2.dilate(thresh, None, iterations=2)
 
-        # Znajd? kontury
+        # Znajdz kontury
         contours, _ = cv2.findContours(thresh.copy(),
                                        cv2.RETR_EXTERNAL,
                                        cv2.CHAIN_APPROX_SIMPLE)
