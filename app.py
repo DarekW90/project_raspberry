@@ -19,7 +19,7 @@ socketio = SocketIO(app)
 
 # Global variable to store the last frame
 camera_lock = Lock()
-LAST_FRAME = None
+last_frame = None
 
 # Konfiguracja bazy danych
 # DB_NAME = "measurements.db"
@@ -96,7 +96,7 @@ def capture_camera():
                 break
 
             with camera_lock:
-                LAST_FRAME = frame.copy()  # Aktualizuj globalna klatke
+                last_frame = frame.copy()  # Aktualizuj globalna klatke
 
             # Dodaj opoznienie, aby uniknac przeciazenia CPU
             time.sleep(0.05)
@@ -112,9 +112,9 @@ def generate_frames():
     last_frame = None
     while True:
         with camera_lock:
-            if LAST_FRAME is None:
+            if last_frame is None:
                 continue
-            _, buffer = cv2.imencode('.jpg', LAST_FRAME)
+            _, buffer = cv2.imencode('.jpg', last_frame)
             frame = buffer.tobytes()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -136,9 +136,9 @@ def detect_motion():
 
     while True:
         with camera_lock:
-            if LAST_FRAME is None:
+            if last_frame is None:
                 continue
-            frame = LAST_FRAME.copy()
+            frame = last_frame.copy()
 
         # Przetwarzanie klatki
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
