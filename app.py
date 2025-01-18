@@ -124,7 +124,7 @@ def detect_motion():
     prev_frame_gray = None
 
     # Sciezka do folderu "phototrap"
-    photo_dir = "phototrap"
+    photo_dir = "/home/raspi/Desktop/ProjektZaliczeniowy/Projekt/phototrap"
 
     # Jezli "phototrap" nie jest katalogiem, utworz go
     if not os.path.isdir(photo_dir):
@@ -501,22 +501,22 @@ def simulate_air_quality():
 if __name__ == '__main__':
     init_db(db_path)
 
-    ### WATKI SYMULUJACE ###
+    # ### WATKI SYMULUJACE ###
 
-    # Wątek do symulacji sensora pH
-    sensor_thread = threading.Thread(target=simulate_ph_control)
-    sensor_thread.daemon = True
-    sensor_thread.start()
+    # # Wątek do symulacji sensora pH
+    # sensor_thread = threading.Thread(target=simulate_ph_control)
+    # sensor_thread.daemon = True
+    # sensor_thread.start()
 
-    # Wątek do symulacji sensora
-    sensor_thread = threading.Thread(target=simulate_sensor)
-    sensor_thread.daemon = True
-    sensor_thread.start()
+    # # Wątek do symulacji sensora
+    # sensor_thread = threading.Thread(target=simulate_sensor)
+    # sensor_thread.daemon = True
+    # sensor_thread.start()
 
-    # Wątek do symulacji sensora jakości powietrza
-    sensor_thread = threading.Thread(target=simulate_air_quality)
-    sensor_thread.daemon = True
-    sensor_thread.start()
+    # # Wątek do symulacji sensora jakości powietrza
+    # sensor_thread = threading.Thread(target=simulate_air_quality)
+    # sensor_thread.daemon = True
+    # sensor_thread.start()
 
 
     ### KONIEC WATKOW SYMULUJACYCH ###
