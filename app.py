@@ -356,6 +356,65 @@ def air_quality_page():
                            measurements=measurements)
 
 
+### FUNKCJE API ###
+
+@app.route('/weather', methods=['GET'])
+def get_weather_data():
+    """Zwraca ostatnie 10 wpisów z tabeli weather_control."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM weather_control ORDER BY timestamp DESC LIMIT 10")
+    rows = cursor.fetchall()
+    conn.close()
+    data = [
+        {"id": row[0], "timestamp": row[1], "temperature": row[2], "humidity": row[3]}
+        for row in rows
+    ]
+    return jsonify(data)
+
+@app.route('/air', methods=['GET'])
+def get_air_quality_data():
+    """Zwraca ostatnie 10 wpisów z tabeli air_control."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM air_control ORDER BY timestamp DESC LIMIT 10")
+    rows = cursor.fetchall()
+    conn.close()
+    data = [
+        {
+            "id": row[0],
+            "timestamp": row[1],
+            "pm25": row[2],
+            "pm10": row[3],
+            "temperature": row[4],
+            "humidity": row[5],
+            "air_quality": row[6],
+        }
+        for row in rows
+    ]
+    return jsonify(data)
+
+@app.route('/water', methods=['GET'])
+def get_water_data():
+    """Zwraca ostatnie 10 wpisów z tabeli water_control."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM water_control ORDER BY timestamp DESC LIMIT 10")
+    rows = cursor.fetchall()
+    conn.close()
+    data = [
+        {
+            "id": row[0],
+            "timestamp": row[1],
+            "ph": row[2],
+            "adjustment": row[3],
+            "current_ph": row[4],
+            "temperature": row[5],
+        }
+        for row in rows
+    ]
+    return jsonify(data)
+
 ### FUNKCJE SYMULUJACE ###
 
 # Funkcja symulujaca dane z sensora
@@ -504,19 +563,19 @@ if __name__ == '__main__':
     # ### WATKI SYMULUJACE ###
 
     # # Wątek do symulacji sensora pH
-    # sensor_thread = threading.Thread(target=simulate_ph_control)
-    # sensor_thread.daemon = True
-    # sensor_thread.start()
+    sensor_thread = threading.Thread(target=simulate_ph_control)
+    sensor_thread.daemon = True
+    sensor_thread.start()
 
     # # Wątek do symulacji sensora
-    # sensor_thread = threading.Thread(target=simulate_sensor)
-    # sensor_thread.daemon = True
-    # sensor_thread.start()
+    sensor_thread = threading.Thread(target=simulate_sensor)
+    sensor_thread.daemon = True
+    sensor_thread.start()
 
     # # Wątek do symulacji sensora jakości powietrza
-    # sensor_thread = threading.Thread(target=simulate_air_quality)
-    # sensor_thread.daemon = True
-    # sensor_thread.start()
+    sensor_thread = threading.Thread(target=simulate_air_quality)
+    sensor_thread.daemon = True
+    sensor_thread.start()
 
 
     ### KONIEC WATKOW SYMULUJACYCH ###
