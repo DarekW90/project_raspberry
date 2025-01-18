@@ -124,7 +124,7 @@ separator.pack(pady=10)
 # Przycisk do pobierania pomiarów wody
 fetch_error_button = tk.Button(root,
                             text="Guzik error",
-                            bg="#ff6347", 
+                            bg="#ff6347",
                             fg="white",
                             command=fetch_error)
 fetch_error_button.pack(pady=5)
