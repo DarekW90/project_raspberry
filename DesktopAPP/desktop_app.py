@@ -3,7 +3,6 @@
 import tkinter as tk
 from tkinter import messagebox
 import requests
-import json
 
 # Adres API serwera Flask
 API_URL = 'http://192.168.0.18:5000'  # Zmienna na adres IP Raspberry Pi
@@ -17,7 +16,7 @@ def fetch_air():
             data = response.json()
             open_listbox.delete(0, tk.END)
             for measurement in data:
-                open_listbox.insert(tk.END, 
+                open_listbox.insert(tk.END,
                 f"""ID: {measurement['id']},
                 timestamp: {measurement['timestamp']}
                 Temp: {measurement['temperature']}°C,
@@ -38,7 +37,7 @@ def fetch_water():
             data = response.json()
             open_listbox.delete(0, tk.END)
             for measurement in data:
-                open_listbox.insert(tk.END, 
+                open_listbox.insert(tk.END,
                 f"""ID: {measurement['id']}
                 Time: {measurement['timestamp']}
                 Temp: {measurement['temperature']}°C
@@ -57,7 +56,7 @@ def fetch_weather():
             data = response.json()
             open_listbox.delete(0, tk.END)
             for measurement in data:
-                open_listbox.insert(tk.END, 
+                open_listbox.insert(tk.END,
                 f"""ID: {measurement['id']}
                 Time: {measurement['timestamp']}
                 Temp: {measurement['temperature']}°C
@@ -81,9 +80,8 @@ def fetch_error():
             data = response.json()
             open_listbox.delete(0, tk.END)
             for measurement in data:
-                open_listbox.insert(tk.END, 
-                f"""
-                """)
+                open_listbox.insert(tk.END,
+                measurement['error'])
         else:
             messagebox.showerror("Błąd", "Nie udało się pobrać historii")
     except requests.exceptions.RequestException as e:
@@ -117,11 +115,18 @@ exit_button.pack(pady=20)
 ### STREFA TESTOWA ###
 
 # Separator
-separator = tk.Label(root, text="test zone", height=1, bg="black", fg="white", width=40)  # Czerwona kreska
+separator = tk.Label(root,
+                     text="test zone",
+                     height=1, bg="black",
+                     fg="white", width=40)
 separator.pack(pady=10)
 
 # Przycisk do pobierania pomiarów wody
-fetch_error_button = tk.Button(root, text="Guzik error", bg="#ff6347", fg="white", command=fetch_error)
+fetch_error_button = tk.Button(root,
+                            text="Guzik error",
+                            bg="#ff6347", 
+                            fg="white",
+                            command=fetch_error)
 fetch_error_button.pack(pady=5)
 
 
